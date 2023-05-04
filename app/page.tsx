@@ -1,51 +1,54 @@
 "use client";
 
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import { FormEvent, useEffect, useState } from "react";
-import axios from "axios";
+import useFipe from "@/hooks/useFipe";
+import Image from "next/image";
 
-const inter = Inter({ subsets: ["latin"] });
+const data = {
+    AnoModelo: "2007",
+    Autenticacao: "11smn9w7lpc",
+    CodigoFipe: "003232-8",
+    Combustivel: "Gasolina",
+    DataConsulta: "sexta-feira, 21 de outubro de 2022 17:13",
+    Marca: "Ford",
+    MesReferencia: "abril de 2023",
+    Modelo: "Ka XR 1.6 MPI 8V",
+    SiglaCombustivel: "G",
+    TipoVeiculo: 1,
+    Valor: "R$ 23.172,00",
+    chassi: "9BFBLZGDA7B608374",
+    cilindradas: "10.0",
+    cor: "Preta",
+    extra: true,
+    ipva: "R$ 463,44",
+    logo: "https://apiplaca.com.br/logo/ford.png",
+    municipio: "TUBARAO",
+    origem: "NACIONAL",
+    potencia: "65",
+    renavam: "Não encontrado",
+    situacao: "Sem restrição",
+    uf: "SC",
+};
 
-export default function Home() {
-    const [placa, setPlaca] = useState("");
+function Home() {
     const [state, setState] = useState("");
-    const [carInfo, setCarInfo] = useState<[]>([]);
+    const [fipe, setFipe] = useState("");
 
-    function handleSubmit(event: FormEvent) {
-        event.preventDefault();
+    // const result = useFipe(fipe);
+    const result = data;
 
-        setPlaca(state);
+    async function handleSubmit(e: FormEvent) {
+        e.preventDefault();
+
+        setFipe(state);
+
         setState("");
     }
-    console.log(carInfo);
 
-    // ta funcionando, agora migra pra react query e usa zustand pra tirar daqui
-    useEffect(() => {
-        async function req() {
-            const data = await axios.post(
-                "https://cluster-01.apigratis.com/api/v1/vehicles/dados",
-                { placa: placa },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        SecretKey: process.env.NEXT_PUBLIC_FIPE_API_SECRET_KEY,
-                        PublicToken: "672ABC94262CVF7CE8262O0ZF35C46F0651A7",
-                        DeviceToken:
-                            process.env.NEXT_PUBLIC_FIPE_API_DEVIDE_TOKEN,
-                        Authorization: `Bearer ${process.env.NEXT_PUBLIC_FIPE_API_AUTH_TOKEN}`,
-                    },
-                }
-            );
-
-            setCarInfo(data);
-        }
-
-        // req();
-    }, [placa]);
+    console.log(result);
 
     return (
-        <div>
+        <div className="app">
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -54,7 +57,18 @@ export default function Home() {
                 />
                 <button>Enviar</button>
             </form>
-            <h2>{carInfo?.data?.response?.Modelo}</h2>
+
+            {result && (
+                <div className="info">
+                    <Image src={result.logo} alt="" width={150} height={150} />
+                    <h3>{result.Modelo}</h3>
+                    <p>{result.AnoModelo}</p>
+                    <p>{result.cor}</p>
+                    <p>{result.Valor}</p>
+                </div>
+            )}
         </div>
     );
 }
+
+export default Home;
