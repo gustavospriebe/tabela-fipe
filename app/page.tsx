@@ -67,21 +67,21 @@ function Home() {
     });
 
     // teste
-    // const result = dataInfo;
-    // const priceThreeMonths = priceInfo?.priceHistory
-    //     .map((t) => ({
-    //         x: t.month,
-    //         y: Number(t.price.split("R$")[1].trim().split(",")[0]),
-    //     }))
-    //     .reverse();
-
-    const result = useFipe(fipe);
-    const priceThreeMonths = data?.data.priceHistory
+    const result = dataInfo;
+    const priceThreeMonths = priceInfo?.priceHistory
         .map((t) => ({
             x: t.month,
             y: Number(t.price.split("R$")[1].trim().split(",")[0]),
         }))
         .reverse();
+
+    // const result = useFipe(fipe);
+    // const priceThreeMonths = data?.data.priceHistory
+    //     .map((t) => ({
+    //         x: t.month,
+    //         y: Number(t.price.split("R$")[1].trim().split(",")[0]),
+    //     }))
+    //     .reverse();
 
     console.log(priceThreeMonths);
 
