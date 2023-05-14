@@ -94,7 +94,7 @@ function Home() {
     }
 
     return (
-        <div className="flex items-center justify-center gap-8 flex-row min-h-screen">
+        <div className="flex items-center justify-center gap-8 flex-col min-h-screen md:flex-row">
             <form
                 onSubmit={handleSubmit}
                 className="flex gap-4 items-center justify-center "

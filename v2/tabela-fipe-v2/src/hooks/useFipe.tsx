@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import fetchFipe from "@/utils/fetchFipe";
+import fetchFipe from "../utils/fetchFipe";
 
 function useFipe(placa: string) {
     // console.log(placa);

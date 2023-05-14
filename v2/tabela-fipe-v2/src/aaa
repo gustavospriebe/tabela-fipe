@@ -1,0 +1,15 @@
+// three day price
+
+const { data } = useQuery({
+    queryKey: ["price", fipe],
+    queryFn: () =>
+        axios.get(
+            `https://parallelum.com.br/fipe/api/v2/cars/${result.CodigoFipe}/years/${result.AnoModelo}-1/history`
+        ),
+});
+const priceThreeMonths = data?.data.priceHistory
+    .map((t) => ({
+        x: t.month,
+        y: Number(t.price.split("R$")[1].trim().split(",")[0]),
+    }))
+    .reverse();
