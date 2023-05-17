@@ -1,9 +1,6 @@
-import useFipe from "./hooks/useFipe";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { FormEvent, useEffect, useState } from "react";
 import ChartComponent from "./components/chart";
-import fetchData, { fetchPlacaFipeData } from "./fetchData";
+import axios from "axios";
 
 const dataInfo = {
     AnoModelo: "2007",
@@ -53,25 +50,66 @@ const priceInfo = {
 
 function App() {
     const [state, setState] = useState("");
-    const [fipe, setFipe] = useState("teste");
+    const [chart, setChart] = useState([])
 
-    const { mutate } = fetchPlacaFipeData();
+    // useEffect(() => {
+
+
+
+    //     // chartData()
+
+    // }, [placa])
+
+
+    async function fipeData(placa: string) {
+        if (placa.length !== 7) return
+
+        const req = await axios.post(
+            "https://cluster-01.apigratis.com/api/v1/vehicles/dados",
+            placa,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    SecretKey: import.meta.env.VITE_PUBLIC_FIPE_API_SECRET_KEY,
+                    PublicToken: "672ABC94262CVF7CE8262O0ZF35C46F0651A7",
+                    DeviceToken: import.meta.env.VITE_PUBLIC_FIPE_API_DEVICE_TOKEN,
+                    Authorization: `Bearer ${import.meta.env.VITE_PUBLIC_FIPE_API_AUTH_TOKEN
+                        }`,
+                },
+            }
+        );
+
+        console.log(req)
+
+
+    }
+
+
+
+    async function chartData() {
+        const req = await axios.get(`https://parallelum.com.br/fipe/api/v2/cars/003232-8/years/2007-1/history`)
+
+        const res = req.data.priceHistory.map((t: { month: string; price: string; }) => ({
+            x: t.month,
+            y: Number(t.price.split("R$")[1].trim().split(",")[0]),
+        })).reverse()
+
+        setChart(res)
+    }
+
 
     // teste
     const result = dataInfo;
-    const priceThreeMonths = priceInfo?.priceHistory
-        .map((t) => ({
-            x: t.month,
-            y: Number(t.price.split("R$")[1].trim().split(",")[0]),
-        }))
-        .reverse();
+    // const priceThreeMonths = priceInfo?.priceHistory
+    //     .map((t) => ({
+    //         x: t.month,
+    //         y: Number(t.price.split("R$")[1].trim().split(",")[0]),
+    //     }))
+    //     .reverse();
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        setFipe(state);
-
-        const placa = state;
-        mutate(placa);
+        fipeData(state);
 
         setState("");
     }
@@ -102,7 +140,7 @@ function App() {
                     <p>{result.cor}</p>
                 </div>
                 <div>
-                    <ChartComponent priceThreeMonths={priceThreeMonths} />
+                    <ChartComponent priceThreeMonths={chart} />
                 </div>
             </>
         </div>

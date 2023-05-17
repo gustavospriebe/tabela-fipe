@@ -21,12 +21,9 @@ const sendPlacaFipeReq = (placa) => {
     );
 };
 
-export const fetchPlacaFipeData = () => {
-    return useMutation(sendPlacaFipeReq);
-};
 
-// export const fetchThreeMonthsPrice = async () => {
-//     const req = await axios.get(
-//         `https://parallelum.com.br/fipe/api/v2/cars/${result.CodigoFipe}/years/${result.AnoModelo}-1/history`
-//     );
-// };
+export const fetchThreeMonthsPrice = async () => {
+    const req = await axios.get(
+        `https://parallelum.com.br/fipe/api/v2/cars/${result.CodigoFipe}/years/${result.AnoModelo}-1/history`
+    );
+};

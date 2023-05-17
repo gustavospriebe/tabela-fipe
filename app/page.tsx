@@ -56,45 +56,71 @@ const priceInfo = {
 
 function Home() {
     const [state, setState] = useState("");
-    const [fipe, setFipe] = useState("teste");
+    const [chart, setChart] = useState([])
 
-    const { data } = useQuery({
-        queryKey: ["price", fipe],
-        queryFn: () =>
-            axios.get(
-                `https://parallelum.com.br/fipe/api/v2/cars/${result.CodigoFipe}/years/${result.AnoModelo}-1/history`
-            ),
-    });
+    useEffect(() => {
+
+
+
+        chartData()
+
+    }, [])
+
+
+    async function fipeData(placa: string) {
+        if (placa.length !== 7) return
+
+        const data = await axios.post(
+            "https://cluster-01.apigratis.com/api/v1/vehicles/dados",
+            placa,
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                    SecretKey: process.env.NEXT_PUBLIC_FIPE_API_SECRET_KEY,
+                    PublicToken: "672ABC94262CVF7CE8262O0ZF35C46F0651A7",
+                    DeviceToken: process.env.NEXT_PUBLIC_FIPE_API_DEVICE_TOKEN,
+                    Authorization: `Bearer ${process.env.NEXT_PUBLIC_FIPE_API_AUTH_TOKEN}`,
+                },
+            }
+        );
+
+        console.log(data)
+
+
+    }
+
+
+
+    async function chartData() {
+        const req = await axios.get(`https://parallelum.com.br/fipe/api/v2/cars/003232-8/years/2007-1/history`)
+
+        const res = req.data.priceHistory.map((t: { month: string; price: string; }) => ({
+            x: t.month,
+            y: Number(t.price.split("R$")[1].trim().split(",")[0]),
+        })).reverse()
+
+        setChart(res)
+    }
+
 
     // teste
     const result = dataInfo;
-    const priceThreeMonths = priceInfo?.priceHistory
-        .map((t) => ({
-            x: t.month,
-            y: Number(t.price.split("R$")[1].trim().split(",")[0]),
-        }))
-        .reverse();
-
-    // const result = useFipe(fipe);
-    // const priceThreeMonths = data?.data.priceHistory
+    // const priceThreeMonths = priceInfo?.priceHistory
     //     .map((t) => ({
     //         x: t.month,
     //         y: Number(t.price.split("R$")[1].trim().split(",")[0]),
     //     }))
     //     .reverse();
 
-    console.log(priceThreeMonths);
-
-    async function handleSubmit(e: FormEvent) {
+    function handleSubmit(e: FormEvent) {
         e.preventDefault();
-
-        setFipe(state);
+        fipeData(state);
 
         setState("");
     }
 
     return (
-        <div className="flex items-center justify-center gap-8 flex-col min-h-screen md:flex-row">
+        <div className="flex items-center justify-center gap-8 flex-row min-h-screen">
             <form
                 onSubmit={handleSubmit}
                 className="flex gap-4 items-center justify-center "
@@ -111,24 +137,17 @@ function Home() {
                 </button>
             </form>
 
-            {result && (
-                <>
-                    <div className="info">
-                        <Image
-                            src={result.logo}
-                            alt=""
-                            width={150}
-                            height={150}
-                        />
-                        <h3>{result.Modelo}</h3>
-                        <p>{result.AnoModelo}</p>
-                        <p>{result.cor}</p>
-                    </div>
-                    <div>
-                        <ChartComponent priceThreeMonths={priceThreeMonths} />
-                    </div>
-                </>
-            )}
+            <>
+                <div className="info">
+                    <img src={result.logo} alt="" />
+                    <h3>{result.Modelo}</h3>
+                    <p>{result.AnoModelo}</p>
+                    <p>{result.cor}</p>
+                </div>
+                <div>
+                    <ChartComponent priceThreeMonths={chart} />
+                </div>
+            </>
         </div>
     );
 }
