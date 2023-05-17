@@ -3,7 +3,7 @@ import axios from "axios";
 async function fetchFipe({ queryKey }: any) {
     const placa = queryKey[1];
 
-    // console.log(placa);
+    console.log(queryKey);
 
     if (placa.length !== 7) return;
 
